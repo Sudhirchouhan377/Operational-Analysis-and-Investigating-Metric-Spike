@@ -1,1 +1,194 @@
+You will be working with three tables:
 
+● users: Contains one row per user, with descriptive information about that user’s account. 
+● events: Contains one row per event, where an event is an action that a user has taken (e.g., login,
+messaging, search). 
+● email_events: Contains events specific to the sending of emails.
+Creating the tables from given datasets case study 2
+
+table 1 :users
+ 
+create table users ( 
+user_id int, 
+created_at varchar(100), 
+company_id int, 
+language varchar (50), 
+activated_at varchar(100), 
+state varchar(50));
+
+
+Import data
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/users.csv' 
+INTO TABLE events 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"' 
+LINES TERMINATED BY '\n' 
+IGNORE 1 LINES;
+
+
+
+
+table 2: events
+
+create table events ( 
+user_id int, 
+occurred_at varchar(100), 
+event_type varchar(50), 
+event_name varchar(100), 
+location varchar(50), 
+device varchar(50), 
+user_type int ) ; 
+
+Import data
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/events.csv' 
+INTO TABLE events 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"' 
+LINES TERMINATED BY '\n' 
+IGNORE 1 LINES;
+event table:
+
+table 3: email_events
+create table email_events ( 
+user_id int, 
+occurred_at varchar(100), 
+action varchar(100), 
+user_type int); 
+
+Import Data
+LOAD DATA INFILE "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/email_events.csv" 
+INTO TABLE email_events 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"' 
+LINES TERMINATED BY '\n' 
+IGNORE 1 LINES;
+email_events table:
+
+
+A) Weekly User Engagement:
+
+SELECT
+EXTRACT(YEAR FROM STR_TO_DATE(occurred_at, '%Y-%m-%d')) AS year_num,
+EXTRACT(WEEK FROM STR_TO_DATE(occurred_at, '%Y-%m-%d')) AS week_num,
+COUNT(DISTINCT user_id) AS no_of_users
+FROM events
+WHERE event_type='engagement'
+GROUP BY year_num, week_num
+ORDER BY year_num, week_num;
+
+
+B) User Growth Analysis:
+
+WITH monthly_user_growth AS (
+SELECT
+DATE_FORMAT(STR_TO_DATE(created_at, '%Y-%m-%d'), '%Y-%m') As month, -- Extract year
+and month
+COUNT(user_id) AS new_users -- Count new users per month
+FROM users
+GROUP BY DATE_FORMAT(STR_TO_DATE(created_at, '%Y-%m-%d'), '%Y-%m')
+)
+SELECT
+month,
+new_users,
+SUM(new_users) OVER (ORDER BY month) AS cumulative_users -- Cumulative sum of users
+over time
+FROM monthly_user_growth
+ORDER BY month;
+
+C) Weekly Retention Analysis:
+
+WITH user_sign_up_weeks AS (
+-- Extract the year-week of user sign-up
+SELECT
+user_id,
+DATE_FORMAT(STR_TO_DATE(created_at, '%d-%m-%Y %H:%i:%s'), '%Y-%u') AS
+sign_up_week
+FROM users
+),
+user_activity_weeks AS (
+-- Extract the year-week of user activity from events and email_events
+SELECT
+user_id,
+DATE_FORMAT(STR_TO_DATE(occurred_at, '%d-%m-%Y %H:%i:%s'), '%Y-%u') AS
+activity_week
+FROM events
+UNION ALL
+SELECT
+user_id,
+DATE_FORMAT(STR_TO_DATE(occurred_at, '%d-%m-%Y %H:%i:%s'), '%Y-%u') AS
+activity_week
+FROM email_events
+),
+user_weekly_retention AS (
+-- Calculate the number of weeks after sign-up that the user was active
+SELECT
+u.user_id,
+u.sign_up_week,
+a.activity_week,
+TIMESTAMPDIFF(
+WEEK,
+STR_TO_DATE(CONCAT(u.sign_up_week, '-1'), '%Y-%u-%w'),
+STR_TO_DATE(CONCAT(a.activity_week, '-1'), '%Y-%u-%w')
+) AS weeks_after_signup
+FROM user_sign_up_weeks u
+JOIN user_activity_weeks a ON u.user_id = a.user_id
+WHERE a.activity_week >= u.sign_up_week -- Only consider activities on or after signup week
+)
+SELECT
+sign_up_week,
+weeks_after_signup,
+COUNT(DISTINCT user_id) AS retained_users
+FROM user_weekly_retention
+GROUP BY sign_up_week, weeks_after_signup
+ORDER BY sign_up_week, weeks_after_signup;
+
+
+D) Weekly Engagement Per Device:
+
+
+WITH events_cleaned AS (
+SELECT
+STR_TO_DATE(occurred_at, '%d-%m-%Y %H:%i:%s') AS occurred_dt,
+device
+FROM events
+),
+weekly_device_engagement AS (
+SELECT
+DATE_FORMAT(occurred_dt, '%Y-%u') AS week_start, -- Year-Week (calendar weeks)
+device,
+COUNT(*) AS event_count
+FROM events_cleaned
+GROUP BY week_start, device
+)
+SELECT
+week_start,
+device,
+event_count
+FROM weekly_device_engagement
+ORDER BY week_start, device;
+
+E) Email Engagement Analysis:
+
+WITH email_cleaned AS (
+-- Convert occurred_at to proper DATETIME
+SELECT
+STR_TO_DATE(occurred_at, '%d-%m-%Y %H:%i:%s') AS occurred_dt,
+action
+FROM email_events
+),
+weekly_email_engagement AS (
+-- Weekly aggregation by action
+SELECT
+DATE_FORMAT(occurred_dt, '%Y-%u') AS week_start, -- Year-week (Sunday-based weeks)
+action,
+COUNT(*) AS action_count
+FROM email_cleaned
+GROUP BY week_start, action
+)
+SELECT
+week_start,
+action,
+action_count
+FROM weekly_email_engagement
+ORDER BY week_start, action;
+Output:
