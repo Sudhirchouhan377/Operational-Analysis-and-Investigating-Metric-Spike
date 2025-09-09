@@ -1,0 +1,71 @@
+Operational Analytics plays a pivotal role in modern data-driven organizations, enabling companies to move beyond static reporting toward real-time, actionable intelligence. The core objective of this project is to investigate anomalies and metric spikes across diverse operational areas, with a focus on identifying underlying drivers and providing strategic recommendations to enhance business performance.
+
+The project will cover a wide range of areas, including user engagement, sales performance, marketing effectiveness, and more. You'll be provided with access to datasets containing user information, events data, and email engagement details.
+
+
+
+## Dataset Overview
+#### job_data with the following columns:
+```job_id: Unique identifier of jobs``` 
+
+```actor_id: Unique identifier of actor```
+
+```event: The type of event (decision/skip/transfer)```
+
+```language: The Language of the content```
+
+```time_spent: Time spent to review the job in seconds```
+
+```org: The Organization of the actor```
+
+```ds: The date in the format yyyy/mm/dd (stored as text)```
+
+#### ```users: Contains one row per user, with descriptive information about that user’s account.```
+
+#### ```events: Contains one row per event, where an event is an action that a user has taken (e.g., login, messaging, search).```
+
+#### ```email_events: Contains events specific to the sending of emails.```
+
+## Analysis on Case Study 1: Job Data Analysis
+In this case study, I worked with the "job_data" table, investigating job-related metrics.  Tasks includes calculating the number of jobs reviewed per hour for each day in November 2020, deriving the 7-day rolling average of throughput, analyzing the language share over the last 30 days, and identifying duplicate rows in the data.
+## Key Questions Explored
+
+### Jobs Reviewed Over Time
+Objective: Calculateing the number of jobs reviewed per hour for each day in November 2020.
+### Throughput Analysis
+Objective: Calculating the 7-day rolling average of throughput (number of events per second).
+### Language Share Analysis
+Objective: Calculating the percentage share of each language in the last 30 days.
+### Duplicate Rows Detection
+Objective: Identifying duplicate rows in the data.
+
+## Analysis on Case Study 2: Investigating Metric Spike
+In this case study, I worked with three tables: "users," "events," and "email_events." Tasks involves measuring weekly user engagement, analyzing user growth over time, investigating weekly user retention, measuring weekly engagement per device, and analyzing email engagement metrics.
+
+### Weekly User Engagement
+Objective: Measuring the activeness of users on a weekly basis.
+
+### User Growth Analysis
+Objective: Analyzing the growth of users over time for a product.
+
+### Weekly Retention Analysis
+Objective: Analyzing the retention of users on a weekly basis after signing up for a product.
+
+### Weekly Engagement Per Device
+Objective: Measuring the activeness of users on a weekly basis per device.
+
+### Email Engagement Analysis
+Objective: Analyzing how users are engaging with the email service.
+
+
+
+
+
+## Summary of Findings
+- [Case_Study_1 & case_study_2](https://github.com/Sudhirchouhan377/Operational-Analysis-and-Investigating-Metric-Spike/blob/main/report/case__study_1%20&%20case_study_2)
+
+## Author
+- <ins><b>©202 Sudhir Chouhan. 
+- <b>[LinkedIn](https://www.linkedin.com/in/sudhir-chouhan2663/)</b>
+
+
