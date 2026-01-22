@@ -57,7 +57,7 @@ Key tasks include:
 
 ---
 
-## 👨‍💻 Author
+## Author
 - **©2025 Sudhir Chouhan**  
 - [LinkedIn Profile](https://www.linkedin.com/in/sudhir-chouhan2663/)  
 
